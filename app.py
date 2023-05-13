@@ -1,8 +1,12 @@
 import socketio
 from flask import Flask
-from main import transcript, doctor_summary
-from llm import patient_instruction_memory, patient_instructor
+from llm import patient_instructor, clinical_note_writer
 from socketcallback import SocketIOCallback
+from state import state_store
+import logging
+
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
 app = Flask(__name__)
@@ -31,39 +35,65 @@ def stop_recording(sid):
 
 @sio.event
 def set_summary(sid, text):
-    global doctor_summary
-    doctor_summary = text
-    print('set_summary ', sid, doctor_summary)
+    global state_store
+    state_store["doctor_summary"] = text
+    print('set_summary', sid, state_store["doctor_summary"])
 
 
 @sio.event
-def patient_question(sid, text):
-    callback = SocketIOCallback(lambda x: sio.emit('patient_answer', x))
-    result = patient_instructor.run({
-        "input": text,
-        "summary": doctor_summary
-    },
-                                    callbacks=[callback])
-    sio.emit('patient_answer_final', result)
+def generate_notes(sid, doctors_hints):
+    global state_store
+    print("transcript for note generation", state_store["transcript"])
+    print("doctors_hints", doctors_hints)
+    steam_handler = SocketIOCallback(lambda x: sio.emit('generate_notes', x))
+    notes = clinical_note_writer.run(
+        {
+            "input": doctors_hints,
+            "transcript": state_store["transcript"]
+        },
+        callbacks=[steam_handler])
+    print("Generated notes", notes)
+    sio.emit('generate_notes', notes)
 
 
 @sio.event
-def reset(sid):
-    global transcript
-    global doctor_summary
-    global patient_instruction_memory
-    transcript = ""
-    doctor_summary = ""
-    patient_instruction_memory.clear()
-    print('reset complete', sid)
+def patient_message(sid, text):
+    callback = SocketIOCallback(lambda partial_ai_response: sio.emit('patient_message', {
+        "text": partial_ai_response,
+        "done": False
+    }))
+    memory = state_store["patient_instruction_memory"]
+    history = memory.load_memory_variables({})["history"]
+    print("history from memory", history)
+    ai_response = patient_instructor.run(
+        {
+            "input": text,
+            "history": history,
+            "doctor_summary": state_store["doctor_summary"]
+        },
+        callbacks=[callback])
+    memory.chat_memory.add_user_message(text)
+    memory.chat_memory.add_ai_message(ai_response)
+    sio.emit('patient_message', {"text": ai_response, "done": True})
+
+
+# @sio.event
+# def reset(sid):
+#     global transcript
+#     global doctor_summary
+#     global patient_instruction_memory
+#     transcript = ""
+#     doctor_summary = ""
+#     patient_instruction_memory.clear()
+#     print('reset complete', sid)
 
 
 def send_transcript(text):
     sio.emit('transcript', text)
 
 
-def send_ai_message(text):
-    sio.emit('ai_message', text)
+def send_ai_note(text):
+    sio.emit('ai_note', text)
 
 
 def send_patient_instructions(text):
