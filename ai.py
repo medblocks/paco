@@ -23,5 +23,6 @@ patient_instructions_template = PromptTemplate(input_variables=["summary"],
 doctor_helper = LLMChain(llm=llm, prompt=doctor_helper_template)
 patient_instructor = LLMChain(llm=llm, prompt=patient_instructions_template)
 
-result = doctor_helper.run({"transcript": "I have fever since 3 days"}, callbacks=[StreamingStdOutCallbackHandler()])
+
+# result = doctor_helper.run({"transcript": "I have fever since 3 days"}, callbacks=[StreamingStdOutCallbackHandler()])
 # print(result)
