@@ -11,7 +11,6 @@
   let loading = false;
 
   onMount(async () => {
-    DoctorSocket.connect();
     DoctorSocket.on("connect", () => {
       console.log("connected to socket");
     });
@@ -23,15 +22,10 @@
     });
   });
 
-  onDestroy(() => {
-    DoctorSocket.disconnect();
-  });
-
-  
 </script>
 
 <div
-  class="h-full border-2 border-indigo-600 border-solid flex flex-col overflow-x-hidden"
+  class="h-full border-2 border-gray-600 border-solid flex flex-col overflow-x-hidden"
 >
   <Tile class="w-full flex justify-between">
     <p class="text-lg">Your conversation with [Patient Name]</p>

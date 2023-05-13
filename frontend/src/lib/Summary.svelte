@@ -1,29 +1,53 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import { Tile, TextArea, Button, ButtonSet } from "carbon-components-svelte";
   import ArrowRight from "carbon-icons-svelte/lib/ArrowRight.svelte";
+  import DiagramReference from "carbon-icons-svelte/lib/DiagramReference.svelte";
+  import { onMount } from "svelte";
+  import { DoctorSocket } from "../types";
+
+  let value = ``;
+
+  onMount(() => {
+
+    DoctorSocket.on("generate_notes", (x) => {
+      console.log(x);
+      x = x
+    });
+  });
+
+  const generate = () => {
+    DoctorSocket.emit("generate_notes", value);
+  };
+
+  const setSummary = () => {
+    DoctorSocket.emit("set_summary", value)
+  };
+
 </script>
 
 <div class="w-full flex flex-col justify-start">
   <Tile class="block">
     <p class="text-lg">Clinical Notes</p>
   </Tile>
-
   <TextArea
     hideLabel
-    placeholder="Fever since 3 days....."
+    placeholder={`Record any notes here about the Encounter.`}
     class="mt-2 block"
+    bind:value
+    on:change={setSummary}
     rows={30}
   />
-  <ButtonSet class="flex justify-end">
+  <ButtonSet class="flex justify-end mt-2">
     <Button
       on:click={() => {
         location.reload();
       }}
-      kind="danger"
-      class="mt-2 block">Reset</Button
+      kind="danger-ghost">Reset</Button
     >
-    <Button icon={ArrowRight} class="mt-2 block">Save</Button>
+    <Button icon={DiagramReference} class="block" kind="secondary" on:click={generate}
+      >Generate</Button
+    >
+    <Button on:click={setSummary} class="block" icon={ArrowRight}>Save</Button>
   </ButtonSet>
 
   <div />

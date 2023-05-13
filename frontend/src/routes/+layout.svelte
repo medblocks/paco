@@ -5,7 +5,7 @@
 </script>
 
 <Nav />
-<div class="m-15" >
+<div class="mt-15" >
   <slot />
 </div>
 
