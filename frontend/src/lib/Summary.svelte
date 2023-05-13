@@ -11,7 +11,7 @@
 
     DoctorSocket.on("generate_notes", (x) => {
       console.log(x);
-      x = x
+      value = x
     });
   });
 
