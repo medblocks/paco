@@ -2,12 +2,16 @@ from __future__ import division
 from google.cloud import speech
 import pyaudio
 import queue
+from concurrent.futures import ThreadPoolExecutor
+from threading import Thread
 
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 SPEAKER_DIARIZATION = True
 MODEL = 'medical_conversation'
+
+executor = ThreadPoolExecutor(1)
 
 
 class MicrophoneStream(object):
@@ -168,9 +172,9 @@ def transcribe_gcp(fn=None):
         use_enhanced=True)
 
     streaming_config = speech.StreamingRecognitionConfig(config=config,
-                                                         interim_results=True)
+                                                         interim_results=False)
 
-    with MicrophoneStream(RATE, CHUNK) as stream:
+    def callback(stream):
         audio_generator = stream.generator()
         requests = (speech.StreamingRecognizeRequest(audio_content=content)
                     for content in audio_generator)
@@ -178,3 +182,6 @@ def transcribe_gcp(fn=None):
         responses = client.streaming_recognize(streaming_config, requests)
         # Now, put the transcription responses to use.
         listen_print_loop(responses, fn)
+
+    with MicrophoneStream(RATE, CHUNK) as stream:
+        callback(stream)
