@@ -1,2 +1,4 @@
+from app import start_socketio_server
+
 def serve():
-    pass
+    start_socketio_server()
