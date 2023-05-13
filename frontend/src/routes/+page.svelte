@@ -1,8 +1,7 @@
 <script lang="ts">
-  import "virtual:uno.css";
+  import { Content } from "carbon-components-svelte";
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>
-  Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
+<Content>
+  <h1>Welcome to Paco</h1>
+</Content>
