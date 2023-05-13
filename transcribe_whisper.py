@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 def process_audio(recognizer, audio, model, fn):
-    text = recognizer.recognize_whisper(audio, model=model)
+    text = recognizer.recognize_whisper_api(audio)
     print("[whisper] transcript: ", text)
 
     # Cancels the noise words to some extent
@@ -22,7 +22,7 @@ def get_callback(fn):
         try:
             print("[whisper] processing audio")
             voice_recognition_executor.submit(process_audio, recognizer, audio,
-                                              "tiny.en", fn)
+                                              "small.en", fn)
         except sr.UnknownValueError:
             print("[whisper] could not understand audio")
         except sr.RequestError as e:

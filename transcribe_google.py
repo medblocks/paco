@@ -5,13 +5,10 @@ import queue
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 
-# Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 SPEAKER_DIARIZATION = True
 MODEL = 'medical_conversation'
-
-executor = ThreadPoolExecutor(1)
 
 
 class MicrophoneStream(object):
@@ -142,10 +139,13 @@ def listen_print_loop(responses, fn=None):
                 word.speaker_tag for word in result.alternatives[0].words
             ]
             # Find most occuring element in array
-            most_common_speaker_tag = most_frequent(speaker_array)
+            if len(speaker_array) > 0:
+                most_common_speaker_tag = most_frequent(speaker_array)
+            else:
+                most_common_speaker_tag = 1
             print("[gcp voice] transcript: {}, speaker: {}".format(
                 transcript, most_common_speaker_tag))
-            probable_speaker = f"Speaker {most_common_speaker_tag}: "
+            probable_speaker = f"**Speaker {most_common_speaker_tag}:** "
             if fn:
                 fn(probable_speaker + transcript)
 
