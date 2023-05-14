@@ -1,6 +1,13 @@
 // uno.config.ts
-import { defineConfig } from 'unocss'
+import {
+  defineConfig,
+  presetAttributify, presetTypography, presetUno
+} from 'unocss'
 
 export default defineConfig({
-  // ...UnoCSS options
+  presets: [
+    presetAttributify(), // required when using attributify mode
+    presetUno(), // required
+    presetTypography(),
+  ],
 })

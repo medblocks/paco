@@ -21,6 +21,9 @@ devDependencies:
   '@unocss/extractor-svelte':
     specifier: ^0.51.12
     version: 0.51.12
+  '@unocss/preset-typography':
+    specifier: ^0.51.12
+    version: 0.51.12
   carbon-components-svelte:
     specifier: ^0.73.5
     version: 0.73.5
