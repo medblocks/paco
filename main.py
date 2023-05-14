@@ -22,7 +22,7 @@ def run_on_transcript(text, sendFn, chain):
     global ai_note_set
     print("[tread] running transcript", text)
     callbacks = None
-    if ai_note_set <= 2:
+    if ai_note_set < 2:
         callbacks = [SocketIOCallback(sendFn)]
         ai_note_set += 1
     print("[thread] runnin chain", text, sendFn, chain)
