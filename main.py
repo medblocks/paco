@@ -15,16 +15,16 @@ if USE_WHISPER:
 else:
     transcribe = transcribe_gcp
 
-ai_note_set = False
+ai_note_set = 0
 
 
 def run_on_transcript(text, sendFn, chain):
     global ai_note_set
     print("[tread] running transcript", text)
     callbacks = None
-    if not ai_note_set:
+    if ai_note_set <= 2:
         callbacks = [SocketIOCallback(sendFn)]
-        ai_note_set = True
+        ai_note_set += 1
     print("[thread] runnin chain", text, sendFn, chain)
     final_result = chain.run({"transcript": text}, callbacks=callbacks)
     print("[thread] final_result", final_result)
