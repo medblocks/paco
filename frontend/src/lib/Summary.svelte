@@ -27,7 +27,7 @@
 
 <div class="w-full flex flex-col justify-start">
   <Tile class="block">
-    <p class="text-lg">Clinical Notes</p>
+    <p class="text-lg">Doctors consultation notes</p>
   </Tile>
   <TextArea
     hideLabel

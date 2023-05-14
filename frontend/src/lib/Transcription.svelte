@@ -4,10 +4,9 @@
   import CircleDash from "carbon-icons-svelte/lib/CircleDash.svelte";
 
   import { DoctorSocket, type TranscriptMessage } from "../types";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
 
-  let live =
-    "**lorem ipsum**:  dolor sit amet, consectetur adipiscing elit. sed ut tellusut nisl aliquam aliquam.";
+  let live: string;
   let loading = false;
 
   onMount(async () => {
@@ -21,7 +20,6 @@
       live = x.replaceAll("\n", "\n\n");
     });
   });
-
 </script>
 
 <div
@@ -34,7 +32,11 @@
     />
   </Tile>
 
-  <Content class="overflow-y-scroll" >
-    <SvelteMarkdown source={live} />
+  <Content class="overflow-y-scroll">
+    {#if live}
+      <SvelteMarkdown source={live} />
+    {:else}
+      <p class="text-gray-500">Conversation transcripts go here</p>
+    {/if}
   </Content>
 </div>
