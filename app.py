@@ -73,6 +73,7 @@ def patient_recording(sid, boolean):
 
 @sio.event
 def patient_message(sid, text):
+    print("[socket] seding patient message")
     callback = SocketIOCallback(
         lambda partial_ai_response: sio.emit('patient_message', {
             "text": partial_ai_response,
@@ -87,7 +88,8 @@ def patient_message(sid, text):
             "history": history,
             "doctor_summary": state_store["doctor_summary"]
         },
-        callbacks=[callback])
+        # callbacks=[callback]
+    )
     memory.chat_memory.add_user_message(text)
     memory.chat_memory.add_ai_message(ai_response)
     audio = synthesize(ai_response)
@@ -98,13 +100,12 @@ def patient_message(sid, text):
     })
 
 
-@sio.event
-def render_audio(sid, text):
-    print('rendering audio', text)
-    audio = synthesize(text)
-    print('audio file with length', len(audio))
-    sio.emit('render_audio', audio)
-
+# @sio.event
+# def render_audio(sid, text):
+#     print('rendering audio', text)
+#     audio = synthesize(text)
+#     print('audio file with length', len(audio))
+#     sio.emit('render_audio', audio)
 
 # @sio.event
 # def reset(sid):

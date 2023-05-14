@@ -63,9 +63,9 @@
 
   DoctorSocket.on("patient_transcript", (text) => {
     console.log(text);
-    renderAudioText = text;
-    x = [...x, { message: text, type: "patient" }];
-    DoctorSocket.emit("patient_message", text);
+    // x = [...x, { message: text, type: "patient" }];
+    // DoctorSocket.emit("patient_message", text);
+    value = value + " " + text;
   });
 
   const postMessage = () => {

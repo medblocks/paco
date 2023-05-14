@@ -91,7 +91,7 @@ Patient: {input}
 Paco:""")
 
 cds_helper = LLMChain(llm=gpt3, prompt=cds_helper, verbose=True)
-gpt4=gpt3
+# gpt4=gpt3
 cds_helper_ddx = LLMChain(llm=gpt4, prompt=cds_helper_ddx_prompt, verbose=True)
 cds_helper_qa = LLMChain(llm=gpt4, prompt=cds_helper_qa_prompt, verbose=True)
 
