@@ -57,11 +57,19 @@ def generate_notes(sid, doctors_hints):
 
 
 @sio.event
+def patient_mode(sid, boolean):
+    global state_store
+    state_store["patient_mode"] = boolean
+    print('patient_mode', sid)
+
+
+@sio.event
 def patient_message(sid, text):
-    callback = SocketIOCallback(lambda partial_ai_response: sio.emit('patient_message', {
-        "text": partial_ai_response,
-        "done": False
-    }))
+    callback = SocketIOCallback(
+        lambda partial_ai_response: sio.emit('patient_message', {
+            "text": partial_ai_response,
+            "done": False
+        }))
     memory = state_store["patient_instruction_memory"]
     history = memory.load_memory_variables({})["history"]
     print("history from memory", history)
@@ -90,6 +98,10 @@ def patient_message(sid, text):
 
 def send_transcript(text):
     sio.emit('transcript', text)
+
+
+def send_patient_transcript(text):
+    sio.emit('patient_transcript', text)
 
 
 def send_ai_note(text):

@@ -33,11 +33,22 @@
     };
   });
 
+  DoctorSocket.on("patient_transcript", (text)=>{
+    value = text
+  })
+
   const postMessage = () => {
     x = [...x, { message: value, type: "patient" }];
     DoctorSocket.emit("patient_message", value);
     value = "";
   };
+
+  let recording = false
+  
+  const toggleRecording = () => {
+    recording = !recording
+    DoctorSocket.emit('patient_mode', recording)
+  }
 
   onDestroy(() => {
     DoctorSocket.disconnect();
@@ -46,7 +57,7 @@
 </script>
 
 <div class="h-[93vh] flex flex-col bg-repeat bg-x relative">
-  <div class="flex flex-col overflow-x-scroll gap-y-3 mb-22 lg:w-[60%] mx-auto">
+  <div class="flex flex-col gap-y-3 mb-22 lg:w-[60%] mx-auto">
     {#each x as y}
       <div
         class="flex {y.type === 'patient' ? 'flex-row-reverse' : 'flex-row'}"
@@ -79,6 +90,13 @@
     <Button
       type="submit"
       on:click={postMessage}
+      kind="ghost"
+      icon={SendFilled}
+      size="xl"
+    />
+    <Button
+      type="submit"
+      on:click={toggleRecording}
       kind="ghost"
       icon={SendFilled}
       size="xl"

@@ -20,15 +20,19 @@ ai_note_set = False
 def transcript_callback(text):
     global ai_note_set
     global state_store
-    state_store["transcript"] += text + "\n"
-    send_transcript(state_store["transcript"])
-    callbacks = None
-    if not ai_note_set:
-        stream_callback = SocketIOCallback(lambda x: send_ai_note(x))
-        callbacks = [stream_callback]
-        ai_note_set = True
-    ai_note = cds_helper.run({"transcript": state_store["transcript"]}, callbacks=callbacks)
-    send_ai_note(ai_note)
+    if state_store["patient_mode"]:
+        send_transcript(text)
+    else:
+        state_store["transcript"] += text + "\n"
+        send_transcript(state_store["transcript"])
+        callbacks = None
+        if not ai_note_set:
+            stream_callback = SocketIOCallback(lambda x: send_ai_note(x))
+            callbacks = [stream_callback]
+            ai_note_set = True
+        ai_note = cds_helper.run({"transcript": state_store["transcript"]},
+                                 callbacks=callbacks)
+        send_ai_note(ai_note)
 
 
 if __name__ == "__main__":

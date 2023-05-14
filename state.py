@@ -10,6 +10,6 @@ memory.chat_memory.add_user_message
 state_store = {
     "transcript": "",
     "doctor_summary": "",
-    "patient_instruction_memory": memory
+    "patient_instruction_memory": memory,
+    "patient_mode": False
 }
-
