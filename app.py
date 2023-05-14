@@ -129,6 +129,16 @@ def send_ai_note(text):
     sio.emit('ai_note', text)
 
 
+def send_cds_ddx(text):
+    print("[socket] sending cds ddx", text)
+    sio.emit('cds_ddx', text)
+
+
+def send_cds_qa(text):
+    print("[socket] sending cds qa", text)
+    sio.emit('cds_qa', text)
+
+
 def send_patient_instructions(text):
     sio.emit('patient_instructions', text)
 
