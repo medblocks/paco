@@ -33,7 +33,7 @@
       <p>Potential Diagnosis</p>
     </Tile>
     <div class="h-full overflow-y-scroll m-2">
-      <Content>
+      <Content class="text-base prose text-lg" >
         <SvelteMarkdown source={ddx} />
       </Content>
     </div>
@@ -43,7 +43,7 @@
       <p>Suggested Questions</p>
     </Tile>
     <div class="h-full overflow-y-scroll m-2">
-      <Content>
+      <Content class="text-base prose text-lg">
         <SvelteMarkdown source={qa} />
       </Content>
     </div>
