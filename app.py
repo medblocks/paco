@@ -3,6 +3,7 @@ from flask import Flask
 from llm import patient_instructor, clinical_note_writer
 from socketcallback import SocketIOCallback
 from state import state_store
+from text_to_speeh_google import synthesize
 import logging
 
 log = logging.getLogger('werkzeug')
@@ -89,7 +90,20 @@ def patient_message(sid, text):
         callbacks=[callback])
     memory.chat_memory.add_user_message(text)
     memory.chat_memory.add_ai_message(ai_response)
-    sio.emit('patient_message', {"text": ai_response, "done": True})
+    audio = synthesize(ai_response)
+    sio.emit('patient_message', {
+        "text": ai_response,
+        "done": True,
+        "audio": audio
+    })
+
+
+@sio.event
+def render_audio(sid, text):
+    print('rendering audio', text)
+    audio = synthesize(text)
+    print('audio file with length', len(audio))
+    sio.emit('render_audio', audio)
 
 
 # @sio.event
@@ -108,7 +122,6 @@ def send_transcript(text):
 
 
 def send_patient_transcript(text):
-
     sio.emit('patient_transcript', text)
 
 
@@ -118,6 +131,10 @@ def send_ai_note(text):
 
 def send_patient_instructions(text):
     sio.emit('patient_instructions', text)
+
+
+def send_patient_audio_message(content):
+    sio.emit('patient_audio_message', content)
 
 
 def start_socketio_server():
