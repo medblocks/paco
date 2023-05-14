@@ -26,7 +26,7 @@
   class="h-full border-2 border-gray-600 border-solid flex flex-col overflow-x-hidden"
 >
   <Tile class="w-full flex justify-between">
-    <p class="text-lg">Your conversation with [Patient Name]</p>
+    <p class="text-lg">Your conversation</p>
     <CircleDash
       class="w-6 h-6 block  {loading && 'animate-duration-[1s] animate-pulse'}"
     />

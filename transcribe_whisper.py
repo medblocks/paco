@@ -21,8 +21,10 @@ def get_callback(fn):
     def callback(recognizer, audio):
         try:
             print("[whisper] processing audio")
-            voice_recognition_executor.submit(process_audio, recognizer, audio,
-                                              "small.en", fn)
+            future = voice_recognition_executor.submit(process_audio,
+                                                       recognizer, audio,
+                                                       "small.en", fn)
+            # future.result()
         except sr.UnknownValueError:
             print("[whisper] could not understand audio")
         except sr.RequestError as e:

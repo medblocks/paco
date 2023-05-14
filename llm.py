@@ -58,7 +58,7 @@ Please consider the patient's stated symptoms, their medical history, and any ot
 cds_helper_ddx_prompt = PromptTemplate(input_variables=["transcript"],
                                        template="""##DDX model
 Based on the provided transcript snippets from a doctor-patient consultation, parse the information to generate a differential diagnosis. The results should be organized as follows:
-Differential Diagnosis: List each possible diagnosis with a model confidence score from 0-100, 100 being most confident.
+Differential Diagnosis: List each possible diagnosis with a model confidence score from 0-100 (example: [30]), 100 being most confident.
 Please consider the patient's stated symptoms, their medical history, and any other relevant information presented in the transcript. The consultation snippets are as follows:
 
 {transcript}
@@ -69,7 +69,7 @@ cds_helper_qa_prompt = PromptTemplate(input_variables=["transcript"],
                                       template="""##Doctor QA model
 Based on the provided transcript snippets from a doctor-patient consultation, internally generate a differential diagnosis based on the patient's stated symptoms, their medical history, and any other relevant information presented in the transcript. Then, suggest potential questions the doctor could ask to facilitate the diagnosis process. The questions should be aimed at clarifying the diagnosis or gathering more information to refine the differential diagnosis.
 The differential diagnosis should not be output. The results should be formatted as follows:
-Questions to Ask: Provide a list of top 5 relevant questions the doctor could ask to further clarify the diagnosis.
+Questions to Ask: Provide a list of top 3 relevant questions the doctor could ask to further clarify the diagnosis. The question is succint and short.
 The consultation snippets are as follows:
 
 {transcript}
@@ -91,7 +91,7 @@ Patient: {input}
 Paco:""")
 
 cds_helper = LLMChain(llm=gpt3, prompt=cds_helper, verbose=True)
-
+gpt4=gpt3
 cds_helper_ddx = LLMChain(llm=gpt4, prompt=cds_helper_ddx_prompt, verbose=True)
 cds_helper_qa = LLMChain(llm=gpt4, prompt=cds_helper_qa_prompt, verbose=True)
 

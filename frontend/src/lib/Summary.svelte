@@ -31,19 +31,19 @@
   </Tile>
   <TextArea
     hideLabel
-    placeholder={`Record any notes here about the Encounter.`}
+    placeholder={`Record any notes not captured in the transcript here. You can then use "Generate" to autogenerate a full consultation summary.`}
     class="mt-2 block"
     bind:value
     on:change={setSummary}
     rows={30}
   />
   <ButtonSet class="flex justify-end mt-2">
-    <Button
+    <!-- <Button
       on:click={() => {
         location.reload();
       }}
       kind="danger-ghost">Reset</Button
-    >
+    > -->
     <Button icon={DiagramReference} class="block" kind="secondary" on:click={generate}
       >Generate</Button
     >
