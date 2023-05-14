@@ -45,11 +45,11 @@ def transcript_callback(text):
     if not state_store["patient_mode"]:
         state_store["transcript"] += text + "\n"
         send_transcript(state_store["transcript"])
-        with ThreadPoolExecutor(2) as e:
-            e.submit(run_on_transcript, state_store["transcript"],
-                     send_cds_ddx, cds_helper_ddx)
+        with ThreadPoolExecutor(4) as e:
             e.submit(run_on_transcript, state_store["transcript"], send_cds_qa,
                      cds_helper_qa)
+            e.submit(run_on_transcript, state_store["transcript"],
+                     send_cds_ddx, cds_helper_ddx)
         # callbacks = None
         # if not ai_note_set:
         #     stream_callback = SocketIOCallback(lambda x: send_ai_note(x))
