@@ -23,7 +23,8 @@ def synthesize(text):
 
     # Select the type of audio file you want returned
     audio_config = texttospeech.AudioConfig(
-        speaking_rate=0.75, audio_encoding=texttospeech.AudioEncoding.MP3)
+        speaking_rate=0.9, 
+        audio_encoding=texttospeech.AudioEncoding.MP3)
 
     # Perform the text-to-speech request on the text input with the selected
     # voice parameters and audio file type
