@@ -68,19 +68,6 @@
     DoctorSocket.emit("patient_message", text);
   });
 
-  // DoctorSocket.on("render_audio", (response) => {
-  //   streamingMedia = true;
-  //   audioData.push(response);
-  //   const audioBlob = new Blob(audioData, { type: "audio/mp3" });
-  //   const audioUrl = URL.createObjectURL(audioBlob);
-  //   const audio = new Audio(audioUrl);
-
-  //   x = [...x, { type: "bot", audio: audio }];
-  //   streamingMedia = false;
-  //   renderAudioText = "";
-  //   audioData = [];
-  // });
-
   const postMessage = () => {
     x = [...x, { message: value, type: "patient" }];
     DoctorSocket.emit("patient_message", value);
@@ -99,11 +86,9 @@
     }
   };
 
-  // const TTS = () => {};
-
   onDestroy(() => {
-    DoctorSocket.disconnect();
     DoctorSocket.emit("patient_mode", false);
+    DoctorSocket.disconnect();
   });
 </script>
 
@@ -119,8 +104,7 @@
           </div>
         {/if}
         <Tile
-          class="max-w-[80%] min-w-[45%] rounded-md shadow-sm {y.type ===
-          'patient'
+          class="w-[60%] rounded-md shadow-sm {y.type === 'patient'
             ? 'ml-auto'
             : 'mr-auto'}"
         >
