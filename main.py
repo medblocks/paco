@@ -18,13 +18,14 @@ ai_note_set = False
 
 
 def transcript_callback(text):
-    if state_store["patient_mode"]:
-        return
     global ai_note_set
     global state_store
-    if state_store["patient_mode"]:
+    print("[main] transcript callback. patient_mode:{}, patient_recording:{}".
+          format(state_store["patient_mode"],
+                 state_store["patient_recording"]))
+    if state_store["patient_mode"] and state_store["patient_recording"]:
         send_patient_transcript(text)
-    else:
+    if not state_store["patient_mode"]:
         state_store["transcript"] += text + "\n"
         send_transcript(state_store["transcript"])
         callbacks = None
