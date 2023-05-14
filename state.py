@@ -11,5 +11,6 @@ state_store = {
     "transcript": "",
     "doctor_summary": "",
     "patient_instruction_memory": memory,
-    "patient_mode": False
+    "patient_mode": False,
+    "patient_recording": False
 }

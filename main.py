@@ -1,7 +1,7 @@
 from transcribe_google import transcribe_gcp
 from transcribe_whisper import transcribe_whisper
 from threading import Thread
-from app import send_transcript, start_socketio_server, send_ai_note
+from app import send_transcript, start_socketio_server, send_ai_note, send_patient_transcript
 from state import state_store
 from llm import cds_helper
 from socketcallback import SocketIOCallback
@@ -18,10 +18,12 @@ ai_note_set = False
 
 
 def transcript_callback(text):
+    if state_store["patient_mode"]:
+        return
     global ai_note_set
     global state_store
     if state_store["patient_mode"]:
-        send_transcript(text)
+        send_patient_transcript(text)
     else:
         state_store["transcript"] += text + "\n"
         send_transcript(state_store["transcript"])

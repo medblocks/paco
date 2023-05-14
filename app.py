@@ -60,7 +60,14 @@ def generate_notes(sid, doctors_hints):
 def patient_mode(sid, boolean):
     global state_store
     state_store["patient_mode"] = boolean
-    print('patient_mode', sid)
+    print('patient_mode', sid, boolean)
+
+
+@sio.event
+def patient_recording(sid, boolean):
+    global state_store
+    state_store["patient_recording"] = boolean
+    print('patient_recording', sid, boolean)
 
 
 @sio.event
@@ -101,6 +108,7 @@ def send_transcript(text):
 
 
 def send_patient_transcript(text):
+
     sio.emit('patient_transcript', text)
 
 
