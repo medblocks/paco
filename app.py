@@ -54,7 +54,7 @@ def generate_notes(sid, doctors_hints):
         },
         callbacks=[steam_handler])
     print("Generated notes", notes)
-    sio.emit('generate_notes', notes)
+    sio.emit('generate_notes', notes, sid)
 
 
 @sio.event
@@ -73,12 +73,12 @@ def patient_recording(sid, boolean):
 
 @sio.event
 def patient_message(sid, text):
-    print("[socket] seding patient message")
+    print("[socket] received patient message", text)
     callback = SocketIOCallback(
         lambda partial_ai_response: sio.emit('patient_message', {
             "text": partial_ai_response,
             "done": False
-        }))
+        }, sid))
     memory = state_store["patient_instruction_memory"]
     history = memory.load_memory_variables({})["history"]
     print("history from memory", history)
@@ -88,7 +88,7 @@ def patient_message(sid, text):
             "history": history,
             "doctor_summary": state_store["doctor_summary"]
         },
-        # callbacks=[callback]
+        callbacks=[callback]
     )
     memory.chat_memory.add_user_message(text)
     memory.chat_memory.add_ai_message(ai_response)
@@ -97,7 +97,7 @@ def patient_message(sid, text):
         "text": ai_response,
         "done": True,
         "audio": audio
-    })
+    }, sid)
 
 
 # @sio.event
