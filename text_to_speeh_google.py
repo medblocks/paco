@@ -19,12 +19,13 @@ def synthesize(text):
     voice = texttospeech.VoiceSelectionParams(
         language_code="hi-IN",
         name="hi-IN-Neural2-B",
-    )
+        # language_code="ta-IN",
+        # name="ta-IN-Wavenet-A"
+        )
 
     # Select the type of audio file you want returned
     audio_config = texttospeech.AudioConfig(
-        speaking_rate=0.9, 
-        audio_encoding=texttospeech.AudioEncoding.MP3)
+        speaking_rate=0.9, audio_encoding=texttospeech.AudioEncoding.MP3)
 
     # Perform the text-to-speech request on the text input with the selected
     # voice parameters and audio file type

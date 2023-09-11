@@ -8,9 +8,6 @@
   let qa = "";
 
   onMount(async () => {
-    DoctorSocket.on("connect", () => {
-      console.log("connected to socket");
-    });
 
 
     // cds_ddx
@@ -32,7 +29,7 @@
     <Tile>
       <p>Potential Diagnosis</p>
     </Tile>
-    <div class="h-full overflow-y-scroll m-2">
+    <div class="h-full m-2">
       <Content class="text-base prose text-lg" >
         <SvelteMarkdown source={ddx} />
       </Content>
@@ -42,7 +39,7 @@
     <Tile>
       <p>Suggested Questions</p>
     </Tile>
-    <div class="h-full overflow-y-scroll m-2">
+    <div class="h-full m-2">
       <Content class="text-base prose text-lg">
         <SvelteMarkdown source={qa} />
       </Content>

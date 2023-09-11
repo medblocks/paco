@@ -10,10 +10,6 @@
   let loading = false;
 
   onMount(async () => {
-    DoctorSocket.on("connect", () => {
-      console.log("connected to socket");
-    });
-
     DoctorSocket.on("transcript", (x) => {
       console.log(x);
       loading = true;

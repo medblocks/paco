@@ -28,8 +28,6 @@
       type: "bot",
     },
   ];
-
-  DoctorSocket.connect();
   DoctorSocket.emit("patient_mode", true);
 
   interface IContent {
@@ -45,9 +43,9 @@
     } else {
       x = [...x, { message: content.text, type: "bot" }];
     }
-
+    streamingMedia = true;
     if (content.done) {
-      streamingMedia = true;
+      streamingMedia = false;
       audioData.push(content.audio);
       const audioBlob = new Blob(audioData, { type: "audio/mp3" });
       const audioUrl = URL.createObjectURL(audioBlob);
@@ -56,17 +54,23 @@
         ...x.slice(0, x.length - 1),
         { message: content.text, type: "bot", audio: audio },
       ];
-      streamingMedia = false;
       audioData = [];
+      if (value){
+        postMessage()
+      }
     }
   });
 
   DoctorSocket.on("patient_transcript", (text) => {
-    console.log(text);
     // x = [...x, { message: text, type: "patient" }];
     // DoctorSocket.emit("patient_message", text);
-    value = value + " " + text;
+    value = text + value
+    if (!streamingMedia) {
+      postMessage()
+    }
+    streamingMedia = true
   });
+
 
   const postMessage = () => {
     x = [...x, { message: value, type: "patient" }];
@@ -88,12 +92,11 @@
 
   onDestroy(() => {
     DoctorSocket.emit("patient_mode", false);
-    DoctorSocket.disconnect();
   });
 </script>
 
 <div class="h-[93vh] flex flex-col bg-repeat bg-x relative">
-  <div class="flex flex-col gap-y-3 mb-22 lg:w-[60%] mx-auto overflow-y-scroll">
+  <div class="flex flex-col gap-y-3 mb-22 lg:w-[60%] mx-auto">
     {#each x as y}
       <div
         class="flex {y.type === 'patient' ? 'flex-row-reverse' : 'flex-row'}"
@@ -120,13 +123,13 @@
   </div>
 
   <div class="flex absolute bottom-1 w-full px-6 py-3 bg-dark-600">
-    <Button
+    <!-- <Button
       type="submit"
       on:click={toggleRecording}
       kind={recording ? "danger" : "ghost"}
       icon={MicrophoneFilled}
       size="xl"
-    />
+    /> -->
     <Form on:submit={postMessage} class=" w-full flex">
       {#if !streamingMedia}
         <TextInput

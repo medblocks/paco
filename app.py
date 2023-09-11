@@ -1,10 +1,14 @@
 import socketio
 from flask import Flask
-from llm import patient_instructor, clinical_note_writer
+from llm import patient_instructor, clinical_note_writer, cds_helper_ddx, cds_helper_qa
 from socketcallback import SocketIOCallback
 from state import state_store
 from text_to_speeh_google import synthesize
 import logging
+from socketcallback import SocketIOCallback
+from concurrent.futures import ThreadPoolExecutor
+import os
+from transcribe_whisper import transcribe_whisper
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -12,6 +16,7 @@ log.setLevel(logging.ERROR)
 sio = socketio.Server(cors_allowed_origins='*', async_mode='threading')
 app = Flask(__name__)
 app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
+USE_WHISPER = os.getenv("USE_WHISPER", "true") == "true"
 
 
 @sio.event
@@ -25,13 +30,22 @@ def disconnect(sid):
 
 
 @sio.event
-def start_recording(sid):
+def start_recording(sid, value):
+    global state_store
     print('start recording ', sid)
+    stop = transcribe_whisper(transcript_callback)
+    state_store["stop"] = stop
+    return True
 
 
 @sio.event
-def stop_recording(sid):
+def stop_recording(sid, value):
+    global state_store
     print('stop recording ', sid)
+    stop = state_store["stop"]
+    stop(True)
+    state_store["stop"] = None
+    return True
 
 
 @sio.event
@@ -88,8 +102,7 @@ def patient_message(sid, text):
             "history": history,
             "doctor_summary": state_store["doctor_summary"]
         },
-        callbacks=[callback]
-    )
+        callbacks=[callback])
     memory.chat_memory.add_user_message(text)
     memory.chat_memory.add_ai_message(ai_response)
     audio = synthesize(ai_response)
@@ -150,3 +163,39 @@ def send_patient_audio_message(content):
 
 def start_socketio_server():
     app.run('0.0.0.0', 5000)
+
+
+ai_note_set = 0
+
+
+def run_on_transcript(text, sendFn, chain):
+    global ai_note_set
+    print("[tread] running transcript", text)
+    callbacks = None
+    if ai_note_set < 2:
+        callbacks = [SocketIOCallback(sendFn)]
+        ai_note_set += 1
+    print("[thread] runnin chain", text, sendFn, chain)
+    final_result = chain.run({"transcript": text}, callbacks=callbacks)
+    print("[thread] final_result", final_result)
+    sendFn(final_result)
+    print("[thread] final_result sent", sendFn.__name__)
+
+
+def transcript_callback(text):
+    global ai_note_set
+    global state_store
+    global cds_helper_ddx
+    print("[main] transcript callback. patient_mode:{}, patient_recording:{}".
+          format(state_store["patient_mode"],
+                 state_store["patient_recording"]))
+    if state_store["patient_mode"]:
+        send_patient_transcript(text)
+    else:
+        state_store["transcript"] += text + "\n"
+        send_transcript(state_store["transcript"])
+        with ThreadPoolExecutor(4) as e:
+            e.submit(run_on_transcript, state_store["transcript"], send_cds_qa,
+                     cds_helper_qa)
+            e.submit(run_on_transcript, state_store["transcript"],
+                     send_cds_ddx, cds_helper_ddx)
