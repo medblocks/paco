@@ -4,7 +4,7 @@ from state import state_store
 
 
 def process_audio(recognizer, audio, model, fn):
-    text = recognizer.recognize_whisper_api(audio)
+    text = recognizer.recognize_whisper_api(audio,api_key="your openai api key here")
     print("[whisper] transcript: ", text)
 
     # Cancels the noise words to some extent
