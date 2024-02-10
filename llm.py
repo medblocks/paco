@@ -4,13 +4,16 @@ from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import LLMChain, ConversationChain
 from state import state_store
 
+api_key="your openai api key here"
+
 gpt3 = ChatOpenAI(
     # model='gpt-4',
     temperature=0.2,
     streaming=True,
-    verbose=True)
+    verbose=True,
+openai_api_key=api_key)
 
-gpt4 = ChatOpenAI(model='gpt-4', temperature=0.2, streaming=True, verbose=True)
+gpt4 = ChatOpenAI(model='gpt-4', temperature=0.2, streaming=True, verbose=True,openai_api_key=api_key)
 
 clinical_note_writer_template = PromptTemplate(
     input_variables=["transcript", "input"],
